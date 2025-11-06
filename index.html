@@ -1,140 +1,522 @@
-<!DOCTYPE html>
-<html lang="si">
+<!doctype html>
+<html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>💖 මට Video Call එකක් ගන්න</title>
-
-  <meta name="title" content="💖 මට Video Call එකක් ගන්න">
-  <meta name="description" content="මම හිරුනි. මට මේක ඔබලා Video Call එකක් ගන්න.">
+ <title>💖 Hiruni Online Chat</title>
+  <meta name="title" content="💖 Hiruni Online Chat">
   <meta property="og:type" content="website">
-  <meta property="og:url" content="https://hiruni-chat.blogspot.com/">
-  <meta property="og:title" content="💖 මට Video Call එකක් ගන්න">
-  <meta property="og:description" content="මම හිරුනි. මට මේක ඔබලා Video Call එකක් ගන්න.">
+  <meta property="og:url" content="https://ajayz770.github.io/Hiruni-calls/Hiruni.html">
+  <meta property="og:title" content="💖 Hiruni Online">
   <meta property="og:image" content="https://wal699.github.io/sanduni-call/og-image-git.png">
-
+  <link rel="icon" href="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjTzJKZcJS5W4eAZNyHPfRutTpQEN1SNqfSjrjnoVVrqRcWrIUIeW7bei5wdQoLPmVLPk-bbMsA4-Gdwm3E2ZhfjuRNxtcXFg5Fdnpp2vsZGVkA-xgiQAWCn_RPskSiwoYNVnSHY9vu7NzWq3ERvjpzQv37dFZMKR0MkBPr-H3wB4UcdCUUpR5TurSUXqOF/s320/e9bf6093-506b-4931-b4de-e8fbbf1dd8d4.png" type="image/x-icon">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+  
   <style>
-    body {
-      margin: 0;
-      font-family: "Poppins", sans-serif;
+    :root {
+      --background: #01010F;
+      --glow-color: #6c29b1;
+      --header-bg: rgba(16, 15, 34, 0.6);
+      --border-color: rgba(255, 255, 255, 0.1);
+      --bot-bubble-bg: #191829;
+      --user-bubble-gradient: linear-gradient(135deg, #a855f7, #ec4899);
+      --accent-color: #f472b6;
+      --text-primary: #e2e8f0;
+      --text-secondary: #94a3b8;
+      --input-bg: rgba(25, 24, 41, 0.7);
+      --success-color: #22c55e;
+      --danger-color: #ef4444;
+      --info-color: #3b82f6;
+    }
+    * { box-sizing: border-box; }
+    body { 
+      margin: 0; 
+      height: 100dvh; /* Use dynamic viewport height for mobile */
+      width: 100vw; 
+      background-color: var(--background);
+      background-image: radial-gradient(circle at top, var(--glow-color) -40%, var(--background) 35%);
+      background-repeat: no-repeat;
+      color: var(--text-primary); 
+      font-family: 'Poppins', sans-serif; 
+      display: flex; 
+      flex-direction: column;
+      overflow: hidden;
+    }
+    .chat-container { 
+      flex: 1; 
+      display: flex; 
+      flex-direction: column; 
+      max-height: 100%;
+      width: 100%;
+      margin: 0 auto;
+      max-width: 800px;
+    }
+    header { 
+      padding: 12px 16px; 
+      display: flex; 
+      align-items: center; 
+      gap: 12px; 
+      background: var(--header-bg); 
+      border-bottom: 1px solid var(--border-color);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      z-index: 10;
+      flex-shrink: 0;
+    }
+    .brand { display: flex; align-items: center; gap: 12px; }
+    .brand img { 
+      width: 44px; 
+      height: 44px; 
+      border-radius: 50%;
+      border: 2px solid var(--accent-color);
+      box-shadow: 0 0 10px var(--accent-color);
+      object-fit: cover;
+    }
+    .brand h2 { font-size: 1.1rem; margin: 0; }
+    .header-actions { margin-left: auto; display: flex; gap: 8px; }
+    .header-btn {
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      border: 1px solid var(--border-color);
+      background: rgba(255, 255, 255, 0.05);
+      color: var(--text-secondary);
+      cursor: pointer;
+      display: grid;
+      place-items: center;
+      transition: all 0.2s ease;
+    }
+    .header-btn:hover { background: var(--accent-color); color: white; border-color: var(--accent-color); }
+    .messages { flex: 1; overflow-y: auto; padding: 16px; display: flex; flex-direction: column; gap: 16px; }
+    .messages::-webkit-scrollbar { width: 6px; }
+    .messages::-webkit-scrollbar-track { background: transparent; }
+    .messages::-webkit-scrollbar-thumb { background: var(--border-color); border-radius: 3px; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px) scale(0.98); } to { opacity: 1; transform: translateY(0) scale(1); } }
+    .msg-row { display: flex; gap: 10px; align-items: flex-end; animation: fadeIn 0.3s ease-out; }
+    .msg-row.me { flex-direction: row-reverse; }
+    .bubble { max-width: 80%; padding: 12px 18px; border-radius: 20px; background: var(--bot-bubble-bg); border: 1px solid var(--border-color); line-height: 1.5; }
+    .msg-row.me .bubble { background: var(--user-bubble-gradient); border: none; }
+    .bubble img, .bubble video { max-width: 100%; border-radius: 12px; margin-top: 8px; }
+    .bubble a { color: var(--accent-color); font-weight: 500; }
+    .meta { font-size: 0.7rem; color: var(--text-secondary); margin-top: 5px; text-align: right; }
+    .msg-row.me .meta { color: rgba(255, 255, 255, 0.7); }
+    .composer { flex-shrink: 0; padding: 10px; background: var(--header-bg); border-top: 1px solid var(--border-color); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); display: flex; gap: 8px; align-items: center; }
+    .field { flex: 1; background: var(--input-bg); border: 1px solid var(--border-color); border-radius: 24px; padding: 0 18px; display: flex; align-items: center; }
+    .field input { flex: 1; border: none; background: none; color: var(--text-primary); outline: none; font-size: 1rem; padding: 12px 0; font-family: 'Poppins', sans-serif; }
+    .composer-btn { width: 48px; height: 48px; border-radius: 50%; border: none; cursor: pointer; display: grid; place-items: center; font-size: 1.2rem; color: var(--text-secondary); background: transparent; transition: all 0.2s; }
+    .composer-btn:hover { color: var(--text-primary); }
+    .send-btn { background: var(--user-bubble-gradient); color: white; box-shadow: 0 2px 10px rgba(168, 85, 247, 0.4); }
+    .send-btn:hover { transform: scale(1.05); }
+
+    /* --- NOTIFICATION STYLES --- */
+    .notification-container {
+      position: fixed;
+      top: 20px;
+      left: 0;
+      right: 0;
+      z-index: 1000;
       display: flex;
       justify-content: center;
+      pointer-events: none;
+      transform: translateY(-150%);
+      transition: transform 0.5s cubic-bezier(0.25, 0.8, 0.25, 1);
+    }
+    .notification-container.show {
+      transform: translateY(0);
+    }
+    .notification-banner {
+      pointer-events: auto;
+      background: var(--header-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 24px;
+      padding: 16px;
+      width: 90%;
+      max-width: 400px;
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+      display: flex;
       align-items: center;
-      min-height: 100vh;
-      background: linear-gradient(135deg, #ffb6c1, #ff477e, #ffb6c1);
-      color: #fff;
-      text-align: center;
-      padding: 20px;
-      background-size: 400% 400%;
-      animation: gradientMove 12s ease infinite;
+      gap: 12px;
     }
-
-    @keyframes gradientMove {
-      0% { background-position: 0% 50%; }
-      50% { background-position: 100% 50%; }
-      100% { background-position: 0% 50%; }
+    .notification-avatar {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 2px solid var(--accent-color);
     }
-
-    .card {
-      background: rgba(255, 255, 255, 0.15);
-      backdrop-filter: blur(12px);
-      border-radius: 20px;
-      padding: 40px 30px;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-      max-width: 360px;
-      width: 100%;
+    .notification-info {
+        flex: 1;
     }
-
-    h1 {
-      font-size: 2em;
-      margin-bottom: 10px;
-    }
-
-    p {
-      font-size: 1.1em;
-      margin-bottom: 30px;
-    }
-
-    button {
-      background: #ff3366;
+    .notification-info h3 { margin: 0 0 2px 0; font-size: 1rem; }
+    .notification-info p { margin: 0; color: var(--text-secondary); font-size: 0.85rem; }
+    .notification-actions { display: flex; gap: 10px; }
+    .notification-btn {
+      width: 42px;
+      height: 42px;
       border: none;
-      padding: 14px 32px;
-      color: white;
-      font-size: 1.1em;
-      border-radius: 50px;
+      border-radius: 50%;
+      font-size: 1rem;
       cursor: pointer;
-      transition: 0.3s;
-      box-shadow: 0 4px 15px rgba(255, 51, 102, 0.5);
+      transition: transform 0.2s;
+      display: grid;
+      place-items: center;
+      color: white;
+      text-decoration: none;
     }
-
-    button:hover {
-      background: #e60050;
-      box-shadow: 0 6px 20px rgba(255, 51, 102, 0.7);
-      transform: scale(1.05);
-    }
-
-    .emoji {
-      font-size: 3em;
-      animation: heartbeat 1.5s infinite;
-    }
-
-    @keyframes heartbeat {
-      0%, 100% { transform: scale(1); }
-      50% { transform: scale(1.2); }
-    }
-
-    footer {
-      margin-top: 20px;
-      font-size: 0.85em;
-      opacity: 0.8;
+    .notification-btn:hover { transform: scale(1.1); }
+    #acceptCallBtn, #readMessageBtn { background-color: var(--success-color); }
+    #declineCallBtn, #closeMessageBtn { background-color: var(--danger-color); }
+    
+    /* --- MOBILE OPTIMIZATIONS --- */
+    @media (max-width: 600px) {
+      body {
+        background-image: radial-gradient(circle at top, var(--glow-color) -80%, var(--background) 50%);
+        font-size: 0.95rem;
+      }
+      header {
+        padding: 8px 12px;
+        gap: 10px;
+      }
+      .brand img {
+        width: 40px;
+        height: 40px;
+      }
+      .brand h2 {
+        display: none;
+      }
+      .header-btn {
+        width: 36px;
+        height: 36px;
+      }
+      .messages {
+        padding: 12px;
+      }
+      .bubble {
+        max-width: 90%;
+        padding: 10px 15px;
+      }
+      .composer {
+        padding: 8px;
+        gap: 6px;
+      }
+      .field {
+        padding: 0 15px;
+      }
+      .field input {
+        font-size: 0.95rem;
+      }
+      .composer-btn {
+        width: 44px;
+        height: 44px;
+        font-size: 1.1rem;
+      }
+      .notification-banner {
+        padding: 12px;
+        gap: 10px;
+      }
+      .notification-avatar {
+        width: 40px;
+        height: 40px;
+      }
+      .notification-info h3 {
+        font-size: 0.9rem;
+      }
+      .notification-info p {
+        font-size: 0.8rem;
+      }
+      .notification-btn {
+        width: 40px;
+        height: 40px;
+      }
     }
   </style>
-
-  <script>
-    window.onload = function() {
-      const userAgent = navigator.userAgent.toLowerCase();
-      const isFacebookApp = userAgent.includes("fbav") || userAgent.includes("facebook");
-
-      const pages = [
-        "https://hiruni-chat.blogspot.com/",
-        "https://hiruni-chat.blogspot.com/",
-        "https://hiruni-chat.blogspot.com/"
-      ];
-      const randomPage = pages[Math.floor(Math.random() * pages.length)];
-
-      if (isFacebookApp) {
-        document.body.innerHTML = `
-          <div class="card">
-            <div class="emoji">💞</div>
-            <h1>මට Video Call එකක් ගන්න</h1>
-            <p>ආදරෙන් මට call එකක් දෙන්න ❤️  
-            යට බොත්තම ඔබලා continue කරන්න.</p>
-            <button onclick="openInBrowser()">👉 මට call කරන්න</button>
-          </div>
-          <footer>© 2025 Sanduni 💕 All Rights Reserved</footer>
-        `;
-
-        window.openInBrowser = function() {
-          const isAndroid = /android/.test(userAgent);
-          const isiOS = /iphone|ipad|ipod/.test(userAgent);
-
-          if (isAndroid) {
-            const androidIntent = `intent://${randomPage.replace(/^https?:\/\//, '')}#Intent;scheme=https;package=com.android.chrome;end`;
-            window.location = androidIntent;
-          } else if (isiOS) {
-            window.open(randomPage, "_blank");
-          } else {
-            window.location.href = randomPage;
-          }
-        };
-      } else {
-        window.location.href = randomPage;
-      }
-    };
-  </script>
 </head>
 <body>
+  <main class="chat-container">
+    <header>
+      <div class="brand">
+        <img id="bot-avatar-img" src="" alt="Bot Avatar"/>
+        <h2>Hiruni Amasha</h2>
+      </div>
+      <div class="header-actions">
+        <button class="header-btn" onclick="handleHeaderAction()"><i class="fa-solid fa-phone"></i></button>
+        <button class="header-btn" onclick="handleHeaderAction()"><i class="fa-solid fa-video"></i></button>
+      </div>
+    </header>
+    <section class="messages" id="messages"></section>
+    <footer class="composer">
+      <button class="composer-btn" id="attachBtn"><i class="fa-solid fa-paperclip"></i></button>
+      <div class="field"><input id="input" type="text" placeholder="Message…" required /></div>
+      <button class="composer-btn send-btn" id="sendBtn"><i class="fa-solid fa-paper-plane"></i></button>
+      <input type="file" id="fileInput" style="display:none" />
+    </footer>
+  </main>
+
+  <div id="callNotification" class="notification-container">
+    <div class="notification-banner">
+      <img id="callNotificationAvatar" class="notification-avatar" src="" alt="Bot Avatar"/>
+      <div class="notification-info">
+        <h3>Incoming Call</h3>
+        <p>Hiruni Amasha is calling...</p>
+      </div>
+      <div class="notification-actions">
+        <a id="declineCallBtn" href="#" class="notification-btn"><i class="fa-solid fa-xmark"></i></a>
+        <a id="acceptCallBtn" href="#" class="notification-btn"><i class="fa-solid fa-check"></i></a>
+      </div>
+    </div>
+  </div>
+
+  <div id="messageNotification" class="notification-container">
+    <div class="notification-banner">
+      <img id="messageNotificationAvatar" class="notification-avatar" src="" alt="Bot Avatar"/>
+      <div class="notification-info">
+        <h3>New Message</h3>
+        <p>You have a new message!</p>
+      </div>
+      <div class="notification-actions">
+        <a id="closeMessageBtn" href="#" class="notification-btn"><i class="fa-solid fa-xmark"></i></a>
+        <a id="readMessageBtn" href="#" class="notification-btn"><i class="fa-solid fa-envelope-open"></i></a>
+      </div>
+    </div>
+  </div>
+  
+  <script type="text/javascript">var _Hasync= _Hasync|| [];
+_Hasync.push(['Histats.start', '1,4983281,4,0,0,0,00010000']);
+_Hasync.push(['Histats.fasi', '1']);
+_Hasync.push(['Histats.track_hits', '']);
+_Hasync.push(['Histats.framed_page', '']);
+(function() {
+var hs = document.createElement('script'); hs.type = 'text/javascript'; hs.async = true;
+hs.src = ('//s10.histats.com/js15_as.js');
+(document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(hs);
+})();</script>
+<noscript><a href="/" target="_blank"><img  src="//sstatic1.histats.com/0.gif?4983281&101" alt="php hit counter" border="0"></a></noscript>
+
+<script>
+  // --- CONFIGURATION ---
+  // *** ADDED GOOGLE SCRIPT URL ***
+  const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbzIUqxmJ_HKAIIWvrAIcFW7eaWfdIQRQtq2qdj089syHD18-Bhk0csxcLF968P04qSORA/exec";
+
+  const BOT_AVATAR_URL = "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjvoE31sX2vpb8hrh9j0dLejInRgcTJZpFTo8yc0VkT_9QdZoqC5wpDoCA8Rx-D9k3BCycimjUYci_EF0N4d7zMDyVlpalb9Te4FneJjkgqAhQdLk0oFqzzt1coiroyfM9YBQiprr_mfkVs2fersHtog8G0Rx80UT272i8FbJ5xic5Ge0PFzTmOXvUOiW4/s320/Image_fx%20(7).jpg";
+  const AD_REDIRECT_URL = "https://otieu.com/4/9962944";
+  const SEND_BUTTON_AD_URL = "https://www.effectivegatecpm.com/fh554tths?key=a4c08514620435e2df575d8ee46d1619";
+
+
+  // --- NOTIFICATION AD LINKS ---
+  const ACCEPT_CALL_URL = "https://www.effectivegatecpm.com/fh554tths?key=a4c08514620435e2df575d8ee46d1619";
+  const DECLINE_CALL_URL = "https://otieu.com/4/9960407";
+  const READ_MESSAGE_URL = "https://otieu.com/4/9962944";
+  const CLOSE_MESSAGE_URL = "https://www.effectivegatecpm.com/fh554tths?key=a4c08514620435e2df575d8ee46d1619";
+
+  // --- DOM ELEMENTS ---
+  const messagesContainer = document.getElementById('messages');
+  const inputField = document.getElementById('input');
+  const sendBtn = document.getElementById('sendBtn');
+  const attachBtn = document.getElementById('attachBtn');
+  const fileInput = document.getElementById('fileInput');
+  const botAvatarImg = document.getElementById('bot-avatar-img');
+  
+  // Notification Elements
+  const callNotification = document.getElementById('callNotification');
+  const callNotificationAvatar = document.getElementById('callNotificationAvatar');
+  const acceptCallBtn = document.getElementById('acceptCallBtn');
+  const declineCallBtn = document.getElementById('declineCallBtn');
+  
+  const messageNotification = document.getElementById('messageNotification');
+  const messageNotificationAvatar = document.getElementById('messageNotificationAvatar');
+  const readMessageBtn = document.getElementById('readMessageBtn');
+  const closeMessageBtn = document.getElementById('closeMessageBtn');
+
+  // --- STATE MANAGEMENT ---
+  let userMessagesSent = 0;
+  let notificationsStarted = false;
+  let notificationInterval = null;
+  let showCallNext = true; // To alternate notifications
+  
+  // --- HELPER FUNCTIONS ---
+  const scrollToBottom = () => { messagesContainer.scrollTop = messagesContainer.scrollHeight; };
+  const displayMessage = ({ content, isUser = false, isHTML = false }) => {
+    const row = document.createElement('div');
+    row.className = 'msg-row' + (isUser ? ' me' : '');
+    const bubble = document.createElement('div');
+    bubble.className = 'bubble';
+    const messageContent = document.createElement('div');
+    if (isHTML) messageContent.innerHTML = content; else messageContent.textContent = content;
+    const meta = document.createElement('div');
+    meta.className = 'meta';
+    meta.textContent = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    bubble.appendChild(messageContent); bubble.appendChild(meta); row.appendChild(bubble);
+    messagesContainer.appendChild(row);
+    scrollToBottom();
+  };
+  
+  // --- NOTIFICATION LOGIC ---
+  const stopNotifications = () => {
+    clearInterval(notificationInterval);
+    notificationInterval = null;
+    notificationsStarted = false;
+    hideNotification(callNotification);
+    hideNotification(messageNotification);
+  };
+
+  const hideNotification = (element) => {
+    element.classList.remove('show');
+  };
+  
+  const showNotification = (element) => {
+    // Hide any other visible notification first
+    if (element === callNotification) hideNotification(messageNotification);
+    if (element === messageNotification) hideNotification(callNotification);
+
+    element.style.display = 'flex';
+    setTimeout(() => {
+        element.classList.add('show');
+    }, 10);
+    
+    // Set a timeout to hide it after 5 seconds
+    setTimeout(() => hideNotification(element), 5000); 
+  };
+  
+  const triggerAlternatingNotification = () => {
+    if (showCallNext) {
+      showNotification(callNotification);
+    } else {
+      // Pick a random message and update the notification text
+      const randomMessage = MESSAGE_NOTIFICATION_TEXTS[Math.floor(Math.random() * MESSAGE_NOTIFICATION_TEXTS.length)];
+      messageNotification.querySelector('.notification-info p').textContent = randomMessage;
+      showNotification(messageNotification);
+    }
+    showCallNext = !showCallNext; // Alternate for the next time
+  };
+
+  const startNotifications = () => {
+    if (notificationsStarted) return;
+    notificationsStarted = true;
+    
+    // First notification after 5 seconds
+    setTimeout(() => {
+        triggerAlternatingNotification();
+        // Subsequent notifications every 8-12 seconds
+        notificationInterval = setInterval(triggerAlternatingNotification, 8000 + Math.random() * 4000); 
+    }, 5000);
+  };
+
+
+  // --- BOT & MAIN LOGIC ---
+  
+  // ADDED: New function to handle random redirection for header buttons
+  const handleHeaderAction = () => {
+      const adLinks = [
+          "https://otieu.com/4/10055511",
+          "https://www.effectivegatecpm.com/r8bawremdr?key=ac5c8d63ab3b529b3512cf38c9429b26"
+      ];
+      const randomIndex = Math.floor(Math.random() * adLinks.length);
+      const randomUrl = adLinks[randomIndex];
+      window.open(randomUrl, '_blank');
+  };
+  
+  // *** DELETED THE OLD getBotReply function ***
+
+  // *** REPLACED handleSendMessage to use GOOGLE SCRIPT ***
+  const handleSendMessage = async () => {
+    const messageText = inputField.value.trim();
+    if (!messageText) return;
+
+    window.open(SEND_BUTTON_AD_URL, '_blank'); // Keep ad functionality
+
+    displayMessage({ content: messageText, isUser: true });
+    inputField.value = '';
+    userMessagesSent++;
+
+    // --- START GOOGLE SCRIPT MODIFICATION ---
+    try {
+      const response = await fetch(WEB_APP_URL, {
+        method: "POST",
+        body: JSON.stringify({ "message": messageText }),
+        headers: {
+          "Content-Type": "text/plain;charset=utf-8",
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error("Network response was not ok");
+      }
+
+      const data = await response.json();
+      const botResponse = data.reply || "Sorry, I had trouble thinking.";
+      
+      // Check if the response is HTML or plain text
+      const isHTML = botResponse.includes('<') && botResponse.includes('>');
+      displayMessage({ content: botResponse, isUser: false, isHTML });
+
+    } catch (error) {
+      console.error("Error fetching bot reply:", error);
+      displayMessage({ 
+        content: "Error connecting to the bot. Please try again. " + error.message, 
+        isUser: false, 
+        isHTML: false 
+      });
+    }
+    // --- END GOOGLE SCRIPT MODIFICATION ---
+
+    if (userMessagesSent > 0 && userMessagesSent % 2 === 0) {
+      console.log(`AD TRIGGER (every 2 messages): Opening ${AD_REDIRECT_URL}`);
+      // window.location.href = AD_REDIRECT_URL; 
+    }
+  };
+
+  const initializeApp = () => {
+    botAvatarImg.src = BOT_AVATAR_URL;
+    callNotificationAvatar.src = BOT_AVATAR_URL;
+    messageNotificationAvatar.src = BOT_AVATAR_URL;
+    
+    acceptCallBtn.href = ACCEPT_CALL_URL;
+    declineCallBtn.href = DECLINE_CALL_URL;
+    readMessageBtn.href = READ_MESSAGE_URL;
+    closeMessageBtn.href = CLOSE_MESSAGE_URL;
+    
+    displayMessage({ content: "<h3>හායි මම හිරුනි</h3><p>මාත් එක්ක දිගටම චැට් කරකර ඉමුද", isUser: false, isHTML: true });
+    startNotifications(); // Start notifications when the app loads
+  };
+
+  // --- EVENT LISTENERS ---
+  sendBtn.addEventListener('click', handleSendMessage);
+  inputField.addEventListener('keydown', (e) => { if(e.key === 'Enter'){ e.preventDefault(); handleSendMessage(); }});
+  
+  // Call notification listeners
+  declineCallBtn.addEventListener('click', (e) => { e.preventDefault(); stopNotifications(); window.open(declineCallBtn.href, '_blank'); });
+  acceptCallBtn.addEventListener('click', (e) => { e.preventDefault(); stopNotifications(); window.open(acceptCallBtn.href, '_blank'); });
+  
+  // Message notification listeners
+  closeMessageBtn.addEventListener('click', (e) => { e.preventDefault(); stopNotifications(); window.open(closeMessageBtn.href, '_blank'); });
+  readMessageBtn.addEventListener('click', (e) => { e.preventDefault(); stopNotifications(); window.open(readMessageBtn.href, '_blank'); });
+  
+  // Hides notifications after their slide-out animation is complete
+  const handleTransitionEnd = (e) => {
+    if (e.propertyName === 'transform' && !e.currentTarget.classList.contains('show')) {
+        e.currentTarget.style.display = 'none';
+    }
+  };
+  callNotification.addEventListener('transitionend', handleTransitionEnd);
+  messageNotification.addEventListener('transitionend', handleTransitionEnd);
+
+  attachBtn.addEventListener('click', () => fileInput.click());
+  fileInput.addEventListener('change', () => {
+    if (fileInput.files.length > 0) {
+      const file = fileInput.files[0];
+      const fileURL = URL.createObjectURL(file);
+      let previewHTML = `<p>File attached: <a href="${fileURL}" target="_blank">${file.name}</a></p>`;
+      if (file.type.startsWith("image/")) previewHTML = `<img src="${fileURL}" alt="${file.name}">`;
+      else if (file.type.startsWith("video/")) previewHTML = `<video controls><source src="${fileURL}" type="${file.type}"></video>`;
+      displayMessage({ content: previewHTML, isUser: true, isHTML: true });
+      fileInput.value = ''; 
+    }
+  });
+
+  window.addEventListener("load", initializeApp);
+</script>
 </body>
 </html>
-
-
